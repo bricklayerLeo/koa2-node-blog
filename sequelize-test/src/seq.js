@@ -10,7 +10,6 @@ const conf = {
 //     idle: 10000  //如果 一个连接池 10s 之内没被使用 则释放
 // }
 const seq = new Sequelize('koa2weibo', 'root', 'lwlw123456', conf)
-
 module.exports = seq
 
 //测试链接

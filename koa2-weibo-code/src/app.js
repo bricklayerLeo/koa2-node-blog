@@ -5,7 +5,12 @@ const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
+const session = require('koa-generic-session')
+const jwtKoa = require('koa-jwt')
+const redisStore = require('koa-redis')
+const { REDIS_CONF } = require('./conf/db.js')
 
+const errorViewRouter = require('./routes/view/error')
 const index = require('./routes/index')  //引入路由 
 const users = require('./routes/users')
 
@@ -27,6 +32,26 @@ app.use(views(__dirname + '/views', {
   extension: 'ejs'
 }))
 
+app.keys = ['UiDhhdloiJJ_8484303&%$#']
+app.use(session({
+  key: 'weibo.sid', //cookie的name  默认是`koa.sid`
+  prefix: 'weibo:sess:', //redis key 的前缀 默认是 ` koa:sess:`
+  cookie: {
+    path: '/',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 //cookie过期时间
+  },
+  // ttl: 24 * 60 * 60 * 1000, //redis过期时间
+  store: redisStore({
+    all: `${REDIS_CONF.host}:${REDIS_CONF.port}`
+  })
+}))
+
+app.use(jwtKoa({
+  secret: 'UHHdid_+#$FS^#%66433^^&$84'
+}).unless(
+  { path: [/^\/users\/login/] } //某些路由不需要 权限
+))
 // logger
 // app.use(async (ctx, next) => {
 //   const start = new Date()
@@ -38,6 +63,7 @@ app.use(views(__dirname + '/views', {
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
+app.use(errorViewRouter.routes(), errorViewRouter.allowedMethods)
 
 // error-handling
 app.on('error', (err, ctx) => {   //控制台打印error
