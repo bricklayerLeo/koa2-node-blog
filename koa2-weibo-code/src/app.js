@@ -9,6 +9,7 @@ const session = require('koa-generic-session')
 const jwtKoa = require('koa-jwt')
 const redisStore = require('koa-redis')
 const { REDIS_CONF } = require('./conf/db.js')
+const { SESSION_KEY, JWT_TOKEN } = require('./conf/secret')
 
 const errorViewRouter = require('./routes/view/error')
 const index = require('./routes/index')  //引入路由 
@@ -32,7 +33,7 @@ app.use(logger())  //日志
 //   extension: 'ejs'
 // }))
 
-app.keys = ['UiDhhdloiJJ_8484303&%$#']
+app.keys = [SESSION_KEY]
 app.use(session({
   key: 'weibo.sid', //cookie的name  默认是`koa.sid`
   prefix: 'weibo:sess:', //redis key 的前缀 默认是 ` koa:sess:`
@@ -48,9 +49,9 @@ app.use(session({
 }))
 
 app.use(jwtKoa({
-  secret: 'UHHdid_+#$FS^#%66433^^&$84'
+  secret: JWT_TOKEN
 }).unless(
-  { path: [/\/isExit/, /\/users\/isExit/] } //某些路由不需要 权限
+  { path: [/\/isExit/, /\/register/] } //某些路由不需要 权限
 ))
 
 
