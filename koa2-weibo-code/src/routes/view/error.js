@@ -1,17 +1,16 @@
 const router = require('koa-router')()
 
-router.get('/', async (ctx, next) => {
-    await ctx.render('index', {
-        title: 'Hello Koa 2!'
-    })
-})
 
 router.get('/error', async (ctx, next) => {
     await ctx.render('error')
 })
 
 router.get('*', async (ctx, next) => {
-    await ctx.render('404')
+    // await ctx.render('404')
+    ctx.body = {
+        errno: -1,
+        msg: '登陆失败'
+    }
 })
 
 

@@ -1,6 +1,6 @@
 const Koa = require('koa')
 const app = new Koa()
-const views = require('koa-views')
+// const views = require('koa-views')
 const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
@@ -12,7 +12,7 @@ const { REDIS_CONF } = require('./conf/db.js')
 
 const errorViewRouter = require('./routes/view/error')
 const index = require('./routes/index')  //引入路由 
-const users = require('./routes/users')
+const users = require('./routes/api/user')
 
 // error handler
 onerror(app)   //页面打印error
@@ -26,11 +26,11 @@ app.use(json())
 app.use(logger())  //日志
 
 
-app.use(require('koa-static')(__dirname + '/public'))
+// app.use(require('koa-static')(__dirname + '/public'))
 
-app.use(views(__dirname + '/views', {
-  extension: 'ejs'
-}))
+// app.use(views(__dirname + '/views', {
+//   extension: 'ejs'
+// }))
 
 app.keys = ['UiDhhdloiJJ_8484303&%$#']
 app.use(session({
@@ -50,8 +50,10 @@ app.use(session({
 app.use(jwtKoa({
   secret: 'UHHdid_+#$FS^#%66433^^&$84'
 }).unless(
-  { path: [/^\/users\/login/] } //某些路由不需要 权限
+  { path: [/\/isExit/, /\/users\/isExit/] } //某些路由不需要 权限
 ))
+
+
 // logger
 // app.use(async (ctx, next) => {
 //   const start = new Date()
@@ -63,7 +65,7 @@ app.use(jwtKoa({
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
-app.use(errorViewRouter.routes(), errorViewRouter.allowedMethods)
+app.use(errorViewRouter.routes(), errorViewRouter.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {   //控制台打印error

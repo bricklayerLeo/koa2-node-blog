@@ -56,5 +56,6 @@ function get(key) {
 }
 
 module.exports = {
-    set
+    set,
+    get
 }
