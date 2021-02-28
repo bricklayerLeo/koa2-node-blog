@@ -5,8 +5,14 @@
  */
 const { getUserInfo, createUser } = require('../services/user')
 const { SuccesModel, ErrorModel } = require('../model/ResModel')
-const { registerUserNameNotExist, registerUserNameExist, registerFailInfo } = require('../model/ErrorInfo')
+const { registerUserNameNotExist, loginFailInfo, registerUserNameExist, registerFailInfo } = require('../model/ErrorInfo')
 const doCrypto = require('../utils/cryp')
+const jwt = require('jsonwebtoken')
+
+const util = require('util')
+const verify = util.promisify(jwt.verify)
+
+
 /**
  * @description 用户是否存在
  * @param {string} username 用户名
@@ -47,7 +53,29 @@ async function register({ userName, password, gender }) {
 
 }
 
+/**
+ * @description  login 登录
+ */
+
+async function login({ ctx, userName, password }) {
+    console.log('3333');
+    password = doCrypto(password)
+    const userInfo = await getUserInfo(userName, password)
+    if (userInfo) {
+        // if (ctx.session.userInfo == null) {
+        //     ctx.session.userInfo = userInfo
+        // }
+        token = jwt.sign(userInfo, 'UHHdid_+#$FS^#%66433^^&$84', {
+            expiresIn: '1h'
+        })
+        return new SuccesModel(token)
+    } else {
+        return new ErrorModel(loginFailInfo)
+    }
+}
+
 module.exports = {
     isExit,
-    register
+    register,
+    login
 }

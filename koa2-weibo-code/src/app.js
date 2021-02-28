@@ -48,10 +48,11 @@ app.use(session({
   })
 }))
 
+// token 验证
 app.use(jwtKoa({
   secret: JWT_TOKEN
 }).unless(
-  { path: [/\/isExit/, /\/register/] } //某些路由不需要 权限
+  { path: [/\/isExit/, /\/login/, /\/register/] } //某些路由不需要 权限
 ))
 
 
