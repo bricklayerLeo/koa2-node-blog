@@ -10,6 +10,7 @@ const doCrypto = require('../utils/cryp')
 const jwt = require('jsonwebtoken')
 
 const util = require('util')
+const { settings } = require('cluster')
 const verify = util.promisify(jwt.verify)
 
 
@@ -65,17 +66,34 @@ async function login({ ctx, userName, password }) {
         // if (ctx.session.userInfo == null) {
         //     ctx.session.userInfo = userInfo
         // }
-        token = jwt.sign(userInfo, 'UHHdid_+#$FS^#%66433^^&$84', {
-            expiresIn: '1h'
-        })
+        token = jwt.sign({ userInfo, time: new Date().getTime(), timeout: 1000 * 60 * 60 * 2 }, 'UHHdid_+#$FS^#%66433^^&$84',
+            // {
+            // expiresIn: '1h'
+            // }
+        )
         return new SuccesModel(token)
     } else {
         return new ErrorModel(loginFailInfo)
     }
 }
 
+
+/**
+ * @description 获取用户设置
+ */
+
+async function setting(ctx) {
+    let token = ctx.request.headers.authorization
+    const payload = await verify(token.split(' ')[1], 'UHHdid_+#$FS^#%66433^^&$84')
+    if (payload.userInfo) {
+        return new SuccesModel(payload.userInfo)
+    } else {
+        return new ErrorModel('失败获取用户数据')
+    }
+}
 module.exports = {
     isExit,
     register,
-    login
+    login,
+    setting
 }

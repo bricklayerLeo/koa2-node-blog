@@ -8,7 +8,7 @@ router.get('/error', async (ctx, next) => {
 router.get('*', async (ctx, next) => {
     // await ctx.render('404')
     ctx.body = {
-        errno: -1,
+        errno: 404,
         msg: '登陆失败'
     }
 })

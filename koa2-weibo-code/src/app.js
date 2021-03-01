@@ -1,4 +1,5 @@
 const Koa = require('koa')
+const path = require('path')
 const app = new Koa()
 // const views = require('koa-views')
 const json = require('koa-json')
@@ -14,7 +15,9 @@ const { SESSION_KEY, JWT_TOKEN } = require('./conf/secret')
 const errorViewRouter = require('./routes/view/error')
 const index = require('./routes/index')  //引入路由 
 const users = require('./routes/api/user')
-
+const setting = require('./routes/api/setting')
+const utilsAPi = require('./routes/api/utils')
+console.log('------------------', utilsAPi);
 // error handler
 onerror(app)   //页面打印error
 
@@ -27,7 +30,9 @@ app.use(json())
 app.use(logger())  //日志
 
 
-// app.use(require('koa-static')(__dirname + '/public'))
+app.use(require('koa-static')(__dirname + '/public'))
+// app.use(require('koa-static')(__dirname + '../uploadFiles'))
+app.use(require('koa-static')(path.join(__dirname), '..', '..', 'uploadFiles'))
 
 // app.use(views(__dirname + '/views', {
 //   extension: 'ejs'
@@ -65,8 +70,10 @@ app.use(jwtKoa({
 // })
 
 // routes
+app.use(utilsAPi.routes(), utilsAPi.allowedMethods())
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
+app.use(setting.routes(), setting.allowedMethods())
 app.use(errorViewRouter.routes(), errorViewRouter.allowedMethods())
 
 // error-handling

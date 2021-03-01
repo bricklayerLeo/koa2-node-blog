@@ -12,7 +12,6 @@ router.post('/register', genValidator(userValidate), async (ctx, next) => {
 })
 
 router.post('/isExit', async (ctx, next) => {
-    console.log('111');
     const { userName } = ctx.request.body
     console.log(ctx.request.body, 'ctx.request.body');
     ctx.body = await isExit(userName)
