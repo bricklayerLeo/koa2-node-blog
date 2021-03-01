@@ -11,13 +11,13 @@ const jwtKoa = require('koa-jwt')
 const redisStore = require('koa-redis')
 const { REDIS_CONF } = require('./conf/db.js')
 const { SESSION_KEY, JWT_TOKEN } = require('./conf/secret')
+const koaStatic = require('koa-static')
 
 const errorViewRouter = require('./routes/view/error')
 const index = require('./routes/index')  //引入路由 
 const users = require('./routes/api/user')
 const setting = require('./routes/api/setting')
 const utilsAPi = require('./routes/api/utils')
-console.log('------------------', utilsAPi);
 // error handler
 onerror(app)   //页面打印error
 
@@ -30,9 +30,9 @@ app.use(json())
 app.use(logger())  //日志
 
 
-app.use(require('koa-static')(__dirname + '/public'))
+app.use(koaStatic(__dirname + '/public'))
 // app.use(require('koa-static')(__dirname + '../uploadFiles'))
-app.use(require('koa-static')(path.join(__dirname), '..', '..', 'uploadFiles'))
+app.use(koaStatic(path.join(__dirname, '..', 'uploadFiles')))
 
 // app.use(views(__dirname + '/views', {
 //   extension: 'ejs'
