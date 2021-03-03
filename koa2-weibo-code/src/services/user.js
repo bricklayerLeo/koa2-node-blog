@@ -19,7 +19,7 @@ async function getUserInfo(userName, password) {
         Object.assign(whereOpt, { password })
     }
     const result = await User.findOne({
-        attributes: ['id', 'userName', 'nickName'],
+        attributes: ['id', 'userName', 'nickName', 'city', 'picture'],
         where: whereOpt
     })
 
@@ -46,7 +46,48 @@ async function createUser({ userName, password, nickName, gender = 3 }) {
         gender
     })
 }
+
+/**
+ * @description 修改用户信息
+ * 
+ */
+
+async function updateUser({ newPassword, newNickName, newCity, NewPicture }, { userName, password }) {
+
+    const updateUser = {}
+    if (newPassword) {
+        updateUser.password = newPassword
+    }
+    if (newNickName) {
+        updateUser.nickName = newNickName
+    }
+    if (newCity) {
+        updateUser.city = newCity
+    }
+    if (NewPicture) {
+        updateUser.picture = NewPicture
+    }
+
+
+    const whereData = {
+        userName
+    }
+    if (password) {
+        whereData.password = password
+    }
+    console.log('---updateUser--------', updateUser);
+    console.log('-----------whereData----', whereData);
+    const res = await User.update(
+        updateUser,
+        {
+            where: whereData
+        }
+    )
+    console.log('--------res--------', res);
+    return res[0] > 0  //修改的行数
+}
 module.exports = {
     getUserInfo,
-    createUser
+    createUser,
+    updateUser
 }

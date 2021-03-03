@@ -3,9 +3,9 @@
  *
  *
  */
-const { getUserInfo, createUser } = require('../services/user')
+const { getUserInfo, createUser, updateUser } = require('../services/user')
 const { SuccesModel, ErrorModel } = require('../model/ResModel')
-const { registerUserNameNotExist, loginFailInfo, registerUserNameExist, registerFailInfo } = require('../model/ErrorInfo')
+const { registerUserNameNotExist, changeInfoFailInfo, loginFailInfo, registerUserNameExist, registerFailInfo } = require('../model/ErrorInfo')
 const doCrypto = require('../utils/cryp')
 const jwt = require('jsonwebtoken')
 
@@ -84,16 +84,66 @@ async function login({ ctx, userName, password }) {
 
 async function setting(ctx) {
     let token = ctx.request.headers.authorization
+    console.log('----ctx.request.headers---', token);
     const payload = await verify(token.split(' ')[1], 'UHHdid_+#$FS^#%66433^^&$84')
+    console.log(payload, '-----payload.userInfo------');
     if (payload.userInfo) {
         return new SuccesModel(payload.userInfo)
     } else {
         return new ErrorModel('失败获取用户数据')
     }
 }
+
+/**
+ * @description 修改个人信息
+ * @param {*} ctx 
+ * @param {*} param1 
+ */
+
+async function changeuserInfo(ctx, { nickName, city, picture }) {
+    let token = ctx.request.headers.authorization
+    const payload = await verify(token.split(' ')[1], 'UHHdid_+#$FS^#%66433^^&$84')
+    const userName = payload.userInfo.userName
+    console.log('--------payload.userInfo--------', payload.userInfo);
+    const res = await updateUser(
+        { newNickName: nickName, newCity: city, NewPicture: picture },
+        { userName }
+    )
+    if (res) {
+        const userInfo = Object.assign(payload.userInfo, { nickName, city, picture })
+        const newToken = jwt.sign({ userInfo, time: new Date().getTime(), timeout: 1000 * 60 * 60 * 2 }, 'UHHdid_+#$FS^#%66433^^&$84')
+        ctx.res.setHeader('authorization', newToken);
+        return new SuccesModel()
+    }
+    return new ErrorModel(changeInfoFailInfo)
+}
+
+
+async function changePassword(ctx, { password, newPassword }) {
+    let token = ctx.request.headers.authorization
+    const payload = await verify(token.split(' ')[1], 'UHHdid_+#$FS^#%66433^^&$84')
+    const userName = payload.userInfo.userName
+    const res = await updateUser(
+        { newPassword: doCrypto(newPassword) },
+        { userName, password: doCrypto(password) }
+    )
+
+    if (res) {
+        return new SuccesModel()
+    }
+    return new ErrorModel(changeInfoFailInfo)
+
+}
+
+async function loginOut() {
+
+}
 module.exports = {
     isExit,
     register,
     login,
-    setting
+    setting,
+    changeuserInfo,
+    changePassword,
+    loginOut
 }

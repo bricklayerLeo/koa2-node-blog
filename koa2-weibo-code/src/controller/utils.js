@@ -11,6 +11,13 @@ const DIST_FOLDER_PATH = path.join(__dirname, '..', '..', 'uploadFiles')
 //文件最大按体积 1M
 const MIX_SIZE = 1024 * 1024 * 1024
 
+//判断目录是否存在 不存在创建它
+fse.pathExists(DIST_FOLDER_PATH).then(exist => {
+    if (!exist) {
+        fse.ensureDir(DIST_FOLDER_PATH)
+    }
+})
+
 /**
  * @param {string} name 文件名字
  * @param {string} filePath 文件路径
@@ -18,7 +25,6 @@ const MIX_SIZE = 1024 * 1024 * 1024
  * @param {string} type 文件类型
  */
 async function saveFile({ size, filePath, name, type }) {
-    console.log('---------------------------');
     if (size > MIX_SIZE) {
         //文件过大 删除掉 避免硬盘空间
         //所有文件操作 都是异步的 删除路径就是filePath
