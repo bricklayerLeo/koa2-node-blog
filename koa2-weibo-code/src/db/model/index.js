@@ -3,5 +3,10 @@
  */
 
 const User = require('./User')
+const Blog = require('./Blog')
 
-module.exports = User
+Blog.belongsTo(User, {
+    foreigbKey: 'userId'
+})
+
+module.exports = { Blog, User }

@@ -71,6 +71,7 @@ async function login({ ctx, userName, password }) {
             // expiresIn: '1h'
             // }
         )
+        console.log(token, '---token----');
         return new SuccesModel(token)
     } else {
         return new ErrorModel(loginFailInfo)
@@ -135,8 +136,9 @@ async function changePassword(ctx, { password, newPassword }) {
 
 }
 
-async function loginOut() {
-
+async function loginOut(ctx) {
+    ctx.res.setHeader('authorization', '');
+    return new SuccesModel()
 }
 module.exports = {
     isExit,

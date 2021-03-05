@@ -14,6 +14,7 @@ const { SESSION_KEY, JWT_TOKEN } = require('./conf/secret')
 const koaStatic = require('koa-static')
 
 const errorViewRouter = require('./routes/view/error')
+const blogs = require('./routes/api/blog')
 const index = require('./routes/index')  //引入路由 
 const users = require('./routes/api/user')
 const setting = require('./routes/api/setting')
@@ -70,6 +71,7 @@ app.use(jwtKoa({
 // })
 
 // routes
+app.use(blogs.routes(), blogs.allowedMethods())
 app.use(utilsAPi.routes(), utilsAPi.allowedMethods())
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
