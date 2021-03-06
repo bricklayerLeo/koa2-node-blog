@@ -22,7 +22,7 @@ async function loginCheck(ctx, next) {
         } else {
             //过期
             ctx.body = {
-                status: 50014,
+                errno: '401',
                 message: 'token 已过期'
             };
         }

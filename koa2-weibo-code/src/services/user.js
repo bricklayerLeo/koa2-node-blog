@@ -75,15 +75,12 @@ async function updateUser({ newPassword, newNickName, newCity, NewPicture }, { u
     if (password) {
         whereData.password = password
     }
-    console.log('---updateUser--------', updateUser);
-    console.log('-----------whereData----', whereData);
     const res = await User.update(
         updateUser,
         {
             where: whereData
         }
     )
-    console.log('--------res--------', res);
     return res[0] > 0  //修改的行数
 }
 module.exports = {

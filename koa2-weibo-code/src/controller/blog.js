@@ -3,7 +3,8 @@
  *
  *
  */
-const { createBlog } = require('../services/blog')
+const { createBlog, getPersonBlogList } = require('../services/blog')
+const { getSquareCacheList } = require('../cache/blog')
 const { SuccesModel, ErrorModel } = require('../model/ResModel')
 const xss = require('xss')
 // const { registerUserNameNotExist, changeInfoFailInfo, loginFailInfo, registerUserNameExist, registerFailInfo } = require('../model/ErrorInfo')
@@ -36,9 +37,51 @@ async function createBloCon(ctx, { image, content }) {
     }
 
 }
+/**
+ * @description 获取个人主页微博
+ */
+async function getProfileBlogList(ctx) {
+    const { userName, pageIndex } = ctx.request.query
+    if (!pageIndex) {
+        let pageIndex = 0
+    }
+    const res = await getPersonBlogList({ userName, pageIndex, pageSize: 5 })
 
+
+    const blogList = res.blogList
+    return new SuccesModel({
+        blogList,
+        isEmpty: blogList.length === 0,
+        pageSize: 5,
+        count: res.count,
+        pageIndex
+
+    })
+}
+
+/**
+ * @description  广场页面微博列表
+ */
+async function getSquareBlogList(ctx) {
+    const { pageIndex } = ctx.request.query
+    // getSquareCacheList
+    const res = await getSquareCacheList({ pageIndex, pageSize: 5 })
+
+
+    const blogList = res.blogList
+    return new SuccesModel({
+        blogList,
+        isEmpty: blogList.length === 0,
+        pageSize: 5,
+        count: res.count,
+        pageIndex
+
+    })
+}
 
 
 module.exports = {
     createBloCon,
+    getProfileBlogList,
+    getSquareBlogList
 }

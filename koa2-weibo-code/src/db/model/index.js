@@ -6,7 +6,7 @@ const User = require('./User')
 const Blog = require('./Blog')
 
 Blog.belongsTo(User, {
-    foreigbKey: 'userId'
+    foreignKey: 'userId'
 })
 
 module.exports = { Blog, User }
