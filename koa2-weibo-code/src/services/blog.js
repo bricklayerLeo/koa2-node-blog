@@ -30,7 +30,6 @@ async function getPersonBlogList({ userName, pageIndex = 0, pageSize = 10 }) {
     if (userName) {
         userwhereData.userName = userName
     }
-    console.log('------------pageIndex2---------------', pageIndex);
     const res = await Blog.findAndCountAll(
         {
             limit: pageSize,

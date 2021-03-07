@@ -4,6 +4,7 @@
  *
  */
 const { createBlog, getPersonBlogList } = require('../services/blog')
+const { getFans } = require('./user-relation')
 const { getSquareCacheList } = require('../cache/blog')
 const { SuccesModel, ErrorModel } = require('../model/ResModel')
 const xss = require('xss')
@@ -41,20 +42,34 @@ async function createBloCon(ctx, { image, content }) {
  * @description 获取个人主页微博
  */
 async function getProfileBlogList(ctx) {
-    const { userName, pageIndex } = ctx.request.query
+    let token = ctx.request.headers.authorization
+    const payload = await verify(token.split(' ')[1], 'UHHdid_+#$FS^#%66433^^&$84')
+    const curName = payload.userInfo.userName
+
+    const { userName, pageIndex, id } = ctx.request.query
     if (!pageIndex) {
         let pageIndex = 0
     }
     const res = await getPersonBlogList({ userName, pageIndex, pageSize: 5 })
 
+    //粉丝列表
+    const res1 = await getFans(id)
 
+    console.log(res1, '------------res1--------------------');
+    //我是否关注了此人
+    const Ishas = res1.fanList.some(e => {
+        return e.userName === curName
+    });
+    console.log(Ishas, '------------Ishas--------------------');
     const blogList = res.blogList
     return new SuccesModel({
         blogList,
         isEmpty: blogList.length === 0,
         pageSize: 5,
         count: res.count,
-        pageIndex
+        pageIndex,
+        fans: res1,
+        Ishas
 
     })
 }

@@ -11,19 +11,10 @@ const Blog = seq.define('blog', {
         allowNull: false,
         comment: '用户id'
     },
-    // title: {
-    //     type: STRING,
-    //     allowNull: false,
-    // },
-
     content: {
         type: TEXT,
         allowNull: false,
     },
-    // title: {
-    //     type: STRING,
-    //     allowNull: false,
-    // },
     image: {
         type: STRING,
     }
