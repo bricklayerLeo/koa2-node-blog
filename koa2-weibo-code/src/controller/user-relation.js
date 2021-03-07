@@ -3,7 +3,7 @@
  *
  *
  */
-const { getUsersByFollower, addFollower, deleteFollower } = require('../services/user-relation')
+const { getUsersByFollower, getFollowerByUser, addFollower, deleteFollower } = require('../services/user-relation')
 // const { getSquareCacheList } = require('../cache/blog')
 const { SuccesModel, ErrorModel } = require('../model/ResModel')
 const doCrypto = require('../utils/cryp')
@@ -19,12 +19,22 @@ const verify = util.promisify(jwt.verify)
 
 
 /**
- * @description 获取个人主页微博
+ * @description 获取粉丝列表
  */
 async function getFans(userId) {
     const { count, fanList } = await getUsersByFollower(userId)
     return { count: count ? count : 0, fanList: fanList ? fanList : [] }
 
+}
+
+/**
+ * @description 获取关注人列表
+ * @param {number} userId 
+ */
+
+async function getFocus(userId) {
+    const { count, focusList } = await getFollowerByUser(userId)
+    return { count: count ? count : 0, focusList: focusList ? focusList : [] }
 }
 
 /**
@@ -54,7 +64,6 @@ async function follow(ctx) {
  */
 async function unFollow(ctx) {
     const { userId } = ctx.request.body
-    console.log('-----------userId-------------', userId);
     let token = ctx.request.headers.authorization
     const payload = await verify(token.split(' ')[1], 'UHHdid_+#$FS^#%66433^^&$84')
     const id = payload.userInfo.id
@@ -70,6 +79,7 @@ async function unFollow(ctx) {
 
 module.exports = {
     getFans,
+    getFocus,
     follow,
     unFollow
 }

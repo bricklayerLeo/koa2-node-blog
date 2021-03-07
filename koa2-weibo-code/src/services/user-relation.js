@@ -28,17 +28,53 @@ async function getUsersByFollower(followerId) {
         ]
     })
     // res.count, //所有的总数 
-    console.log('--------followerId---00------------', res);
     let fanList = res.rows.map(row => row.dataValues)
-    console.log('--------fanList--09---------------', fanList);
     fanList = formatUser(fanList)
-    console.log('--------fanList--0dwwef9---------------', fanList);
     return {
         count: res.count,
         fanList
     }
-
 }
+
+
+
+/**
+ *  获取关注人列表
+ * @param {number} userId  
+ */
+
+async function getFollowerByUser(userId) {
+    const res = await UserRelation.findAndCountAll({
+        order: [
+            ['id', 'desc']
+        ],
+        include: [
+            {
+                model: User,
+                attributes: ['id', 'userName', 'nickName', 'picture'],
+            }
+        ],
+        where: {
+            userId
+        }
+    })
+    // res.count, //所有的总数 
+    let focusList = res.rows.map(row => row.dataValues)
+    focusList = focusList.map(item => {
+        let user = item.user.dataValues
+        user = formatUser(user)
+        return user
+    })
+
+
+    // focusList = formatUser(focusList)
+    return {
+        count: res.count,
+        focusList
+    }
+}
+
+
 
 /**
  * 添加关注 关系
@@ -71,5 +107,6 @@ async function deleteFollower(userId, followerId) {
 module.exports = {
     getUsersByFollower,
     addFollower,
-    deleteFollower
+    deleteFollower,
+    getFollowerByUser
 }

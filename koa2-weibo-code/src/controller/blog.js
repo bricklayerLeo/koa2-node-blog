@@ -4,7 +4,7 @@
  *
  */
 const { createBlog, getPersonBlogList } = require('../services/blog')
-const { getFans } = require('./user-relation')
+const { getFans, getFocus } = require('./user-relation')
 const { getSquareCacheList } = require('../cache/blog')
 const { SuccesModel, ErrorModel } = require('../model/ResModel')
 const xss = require('xss')
@@ -54,13 +54,15 @@ async function getProfileBlogList(ctx) {
 
     //粉丝列表
     const res1 = await getFans(id)
+    //关注人列表
+    const res2 = await getFocus(id)
 
-    console.log(res1, '------------res1--------------------');
     //我是否关注了此人
     const Ishas = res1.fanList.some(e => {
         return e.userName === curName
     });
-    console.log(Ishas, '------------Ishas--------------------');
+
+
     const blogList = res.blogList
     return new SuccesModel({
         blogList,
@@ -69,7 +71,8 @@ async function getProfileBlogList(ctx) {
         count: res.count,
         pageIndex,
         fans: res1,
-        Ishas
+        Ishas,
+        focusList: res2
 
     })
 }
